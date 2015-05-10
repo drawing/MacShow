@@ -1,0 +1,53 @@
+<html ng-app>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>管理</title>
+
+<link rel="stylesheet" href="/static/bootstrap.min.css">
+
+<script type="text/javascript" src="/static/angular.min.js"></script>
+<script type="text/javascript" src="/static/app.js"></script>
+
+</head>
+<body>
+
+<div class="container" ng-controller="ManagerCtrl">
+	<table class="table table-hover">
+	<thead>
+	<tr>
+		<th>IP</th>
+		<th>MAC</th>
+		<th>用户名</th>
+		<th>状态</th>
+		<th>操作</th>
+	</tr>
+	</thead>
+	<tbody>
+	{{range .Items}}
+	<tr>
+		<td>{{.IP}}</td>
+		<td>{{.Mac}}</td>
+		<td>{{.User}}</td>
+		<td>
+			{{if .IP}}
+				{{if .Auth}}
+					<b style="color:green"> 通过 </b>
+				{{else}}
+					<b style="color:red"> 等待审核 </b>
+				{{end}}
+			{{else}}
+				<b style="color:red"> 已删除 </b>
+			{{end}}
+		</td>
+		<td>
+			<button ng-click="ClickPost('{{.User}}', 'pass')">通过</button>
+			<button ng-click="ClickPost('{{.User}}', 'delete')">删除</button>
+			<button ng-click="ClickPost('{{.User}}', 'forbid')">禁用</button>
+		</td>
+	</tr>
+	{{end}}
+	</tbody>
+	</table>
+</div>
+</body>
+</html>
