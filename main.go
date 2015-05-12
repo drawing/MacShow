@@ -11,9 +11,11 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"os/exec"
+	// "os/exec"
 	// "strconv"
 	"strings"
+
+	"./tools"
 )
 
 type Config struct {
@@ -354,17 +356,14 @@ func MacShowHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("remote addr:", r.RemoteAddr[:off])
-	cmd := exec.Command("./tools/sendarp.exe", r.RemoteAddr[:off])
 
-	mac_byte, err := cmd.Output()
-	if err != nil {
-		log.Println("stdout read:", err.Error())
-		return
-	}
+	mac, err := tools.ShowMac(r.RemoteAddr[:off])
+	if err != nil || mac == "" {
+		log.Println("MacShow failed:", err.Error(), mac)
 
-	mac := strings.TrimSpace(string(mac_byte))
-	if len(mac) != 12 {
-		log.Println("mac err:", mac)
+		Message := "MAC地址获取失败"
+		tmpl, _ := template.ParseFiles("template/resp.html")
+		tmpl.Execute(w, Message)
 		return
 	}
 
@@ -440,4 +439,5 @@ func main() {
 	go http.ListenAndServe("127.0.0.1:9000", &admin)
 
 	http.ListenAndServe("192.168.1.105:8080", nil)
+	// http.ListenAndServe("127.0.0.1:8080", nil)
 }
